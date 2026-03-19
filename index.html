@@ -861,35 +861,19 @@ document.addEventListener('keydown',e=>{
 });
 
 // ══════════════════════════════════════════════════
-//  TELEGRAM FUNKSIYASINI SHU YERGA QO'SHING
+//  TELEGRAM FUNKSIYASI (ENG TEZKOR)
 // ══════════════════════════════════════════════════
-async function sendToTelegram(name, score, total, percent, time) {
-  const token = '8750247683:AAGCAkeHuTRIBvCQpX2z7GRyoKfE-VrUrC4';  // Bot tokenni o'rnating
-  const chat_id = 7796824556;  // Sizning chat ID
+function sendToTelegram(name, score, total, percent, time) {
+  const token = '8750247683:AAGCAkeHuTRIBvCQpX2z7GRyoKfE-VrUrC4';
+  const chat_id = 7796824556;
 
-  const message = 
-    `📊 Rekursiya Quiz natijasi\n\n` +
-    `👤 Talaba: ${name}\n` +
-    `✅ To'g'ri: ${score}\n` +
-    `❌ Xato: ${total - score}\n` +
-    `📝 Jami: ${total}\n` +
-    `📈 Foiz: ${percent}%\n` +
-    `⏱ Vaqt: ${time}`;
-
-  try {
-    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: chat_id,
-        text: message
-      })
-    });
-    const data = await res.json();
-    console.log("Telegram javobi:", data);
-  } catch (err) {
-    console.error("Xatolik:", err);
-  }
+  const message = `📊 Rekursiya Quiz natijasi%0A👤 Talaba: ${name}%0A✅ To'g'ri: ${score}%0A❌ Xato: ${total - score}%0A📝 Jami: ${total}%0A📈 Foiz: ${percent}%%0A⏱ Vaqt: ${time}`;
+  
+  const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${message}`;
+  
+  navigator.sendBeacon(url);
+  
+  console.log("✅ Yuborildi (background)");
 }
 
 // Telegram Web App init
