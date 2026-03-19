@@ -4,1056 +4,510 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DSA Quiz — Ma'lumotlar Tuzilmasi va Algoritmlar</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<title>DSA Quiz — C# Sikl va Funksiyalar</title>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  html, body {
-  width: 100%;
-  height: 100%;
+:root{
+  --bg:#f0f4ff;--bg2:#e8eeff;--card:#fff;--border:#dde3f8;
+  --accent:#4f46e5;--accent-l:#ede9fe;--green:#10b981;--green-l:#d1fae5;
+  --red:#ef4444;--red-l:#fee2e2;--text:#1e1b4b;--muted:#6b7280;
+  --sh:0 4px 24px rgba(79,70,229,.10);--sh2:0 2px 8px rgba(79,70,229,.07);
 }
-  :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --surface2: #1c1c28;
-    --accent: #00e5ff;
-    --accent2: #ff3d71;
-    --accent3: #a855f7;
-    --text: #e8e8f0;
-    --muted: #6b6b80;
-    --correct: #00e676;
-    --wrong: #ff3d71;
-    --border: rgba(255,255,255,0.07);
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    overflow-x: hidden;
-  }
-
-  body::before {
-    content: '';
-    position: fixed;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(ellipse at 30% 20%, rgba(0,229,255,0.04) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 80%, rgba(168,85,247,0.04) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .container {
-    width: 100%;
-    max-width: 780px;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* ===== SCREEN COMMON ===== */
-  .screen {
-    display: none;
-    animation: fadeIn 0.4s ease;
-  }
-  .screen.active { display: block; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ===== HEADER BADGE ===== */
-  .badge {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    opacity: 0.8;
-  }
-
-  /* ===== INTRO SCREEN ===== */
-  #intro-screen {
-    text-align: center;
-    padding: 60px 20px;
-  }
-
-  .intro-title {
-    font-size: clamp(32px, 6vw, 56px);
-    font-weight: 800;
-    line-height: 1.1;
-    margin-bottom: 8px;
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent3) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .intro-sub {
-    font-size: 16px;
-    color: var(--muted);
-    margin-bottom: 48px;
-  }
-
-  .input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    max-width: 400px;
-    margin: 0 auto 32px;
-  }
-
-  .input-group label {
-    font-size: 13px;
-    color: var(--muted);
-    letter-spacing: 1px;
-    text-align: left;
-    font-family: 'Space Mono', monospace;
-  }
-
-  .input-group input {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 18px;
-    color: var(--text);
-    font-size: 16px;
-    font-family: 'Syne', sans-serif;
-    outline: none;
-    transition: border-color 0.2s;
-    width: 100%;
-  }
-
-  .input-group input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(0,229,255,0.1);
-  }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--accent);
-    color: #000;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 15px;
-    padding: 14px 32px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.5px;
-  }
-
-  .btn:hover {
-    background: #33eaff;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,229,255,0.25);
-  }
-
-  .btn:active { transform: translateY(0); }
-
-  .btn.secondary {
-    background: transparent;
-    color: var(--accent);
-    border: 1px solid var(--accent);
-  }
-  .btn.secondary:hover {
-    background: rgba(0,229,255,0.08);
-    box-shadow: 0 8px 24px rgba(0,229,255,0.1);
-  }
-
-  /* ===== QUIZ SCREEN ===== */
-  .quiz-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 32px;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .quiz-meta {
-    font-family: 'Space Mono', monospace;
-    font-size: 13px;
-    color: var(--muted);
-  }
-
-  .quiz-meta span {
-    color: var(--accent);
-    font-weight: 700;
-  }
-
-  .progress-bar {
-    width: 100%;
-    height: 3px;
-    background: var(--surface2);
-    border-radius: 2px;
-    margin-bottom: 36px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent3));
-    border-radius: 2px;
-    transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
-  }
-
-  .question-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 32px;
-    margin-bottom: 24px;
-  }
-
-  .q-number {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--accent3);
-    letter-spacing: 2px;
-    margin-bottom: 14px;
-  }
-
-  .q-text {
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.5;
-    margin-bottom: 28px;
-  }
-
-  .options {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .option {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 18px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: left;
-  }
-
-  .option:hover:not(.disabled) {
-    border-color: rgba(0,229,255,0.3);
-    background: rgba(0,229,255,0.05);
-  }
-
-  .option.selected {
-    border-color: var(--accent);
-    background: rgba(0,229,255,0.08);
-  }
-
-  .option.correct {
-    border-color: var(--correct);
-    background: rgba(0,230,118,0.1);
-  }
-
-  .option.wrong {
-    border-color: var(--wrong);
-    background: rgba(255,61,113,0.1);
-  }
-
-  .option.disabled { cursor: default; }
-
-  .opt-key {
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--muted);
-    min-width: 22px;
-    padding-top: 1px;
-  }
-
-  .option.selected .opt-key { color: var(--accent); }
-  .option.correct .opt-key  { color: var(--correct); }
-  .option.wrong .opt-key    { color: var(--wrong); }
-
-  .opt-text { font-size: 15px; line-height: 1.5; }
-
-  .feedback-box {
-    margin-top: 20px;
-    padding: 16px 20px;
-    border-radius: 10px;
-    font-size: 14px;
-    line-height: 1.6;
-    display: none;
-  }
-
-  .feedback-box.show { display: block; }
-  .feedback-box.correct-fb { background: rgba(0,230,118,0.08); border: 1px solid rgba(0,230,118,0.25); color: var(--correct); }
-  .feedback-box.wrong-fb   { background: rgba(255,61,113,0.08); border: 1px solid rgba(255,61,113,0.25); color: var(--wrong); }
-
-  .feedback-box .explanation {
-    color: var(--text);
-    margin-top: 6px;
-    opacity: 0.8;
-  }
-
-  .quiz-nav {
-    display: flex;
-    justify-content: flex-end;
-  }
-
-  /* ===== RESULT SCREEN ===== */
-  #result-screen { text-align: center; }
-
-  .result-hero {
-    padding: 48px 20px 32px;
-  }
-
-  .result-name {
-    font-size: 14px;
-    color: var(--muted);
-    font-family: 'Space Mono', monospace;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
-  }
-
-  .result-score-circle {
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    border: 3px solid var(--accent);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 24px;
-    position: relative;
-    box-shadow: 0 0 40px rgba(0,229,255,0.15);
-  }
-
-  .result-score-num {
-    font-size: 48px;
-    font-weight: 800;
-    color: var(--accent);
-    line-height: 1;
-  }
-
-  .result-score-total {
-    font-family: 'Space Mono', monospace;
-    font-size: 13px;
-    color: var(--muted);
-  }
-
-  .result-label {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-
-  .result-pct {
-    font-family: 'Space Mono', monospace;
-    font-size: 14px;
-    color: var(--accent3);
-  }
-
-  .stats-row {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    margin: 28px 0;
-    flex-wrap: wrap;
-  }
-
-  .stat-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px 28px;
-    min-width: 120px;
-  }
-
-  .stat-num {
-    font-size: 32px;
-    font-weight: 800;
-    font-family: 'Space Mono', monospace;
-  }
-
-  .stat-num.g { color: var(--correct); }
-  .stat-num.r { color: var(--wrong); }
-
-  .stat-label {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 4px;
-    letter-spacing: 1px;
-  }
-
-  /* ===== REPORT ===== */
-  .report-title {
-    font-size: 18px;
-    font-weight: 700;
-    margin: 32px 0 16px;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .report-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .report-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px 24px;
-    margin-bottom: 12px;
-    text-align: left;
-    transition: border-color 0.2s;
-  }
-
-  .report-item.r-correct { border-left: 3px solid var(--correct); }
-  .report-item.r-wrong   { border-left: 3px solid var(--wrong); }
-
-  .r-q-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 10px;
-  }
-
-  .r-icon {
-    font-size: 18px;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-
-  .r-q-text { font-size: 15px; font-weight: 600; line-height: 1.5; }
-
-  .r-answers {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-left: 30px;
-    font-size: 14px;
-  }
-
-  .r-answer { display: flex; gap: 8px; }
-  .r-answer-label { color: var(--muted); font-family: 'Space Mono', monospace; font-size: 12px; min-width: 80px; flex-shrink: 0; }
-  .r-answer-val.c { color: var(--correct); }
-  .r-answer-val.w { color: var(--wrong); }
-
-  .r-explanation {
-    margin-left: 30px;
-    margin-top: 10px;
-    padding: 10px 14px;
-    background: rgba(255,255,255,0.03);
-    border-radius: 8px;
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.6;
-    border: 1px solid var(--border);
-  }
-
-  .result-actions {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    margin: 32px 0 48px;
-    flex-wrap: wrap;
-  }
-
-  /* Timer */
-  .timer-badge {
-    font-family: 'Space Mono', monospace;
-    font-size: 13px;
-    color: var(--muted);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 4px 10px;
-  }
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;padding:24px 16px 64px}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 700px 500px at 10% 0%,rgba(99,102,241,.12),transparent 70%),radial-gradient(ellipse 600px 400px at 90% 100%,rgba(14,165,233,.10),transparent 70%);pointer-events:none;z-index:0}
+.wrap{max-width:780px;margin:0 auto;position:relative;z-index:1}
+.screen{display:none;animation:up .3s ease}
+.screen.on{display:block}
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+#intro.on{display:flex;flex-direction:column;align-items:center;text-align:center;padding:48px 0 32px}
+.logo{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#4f46e5,#818cf8);display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-size:24px;font-weight:700;color:#fff;margin-bottom:24px;box-shadow:0 8px 32px rgba(79,70,229,.35)}
+.ih{font-size:clamp(26px,5vw,44px);font-weight:800;line-height:1.15;margin-bottom:12px}
+.ih em{font-style:normal;background:linear-gradient(90deg,#4f46e5,#0ea5e9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.ip{color:var(--muted);font-size:15px;max-width:440px;line-height:1.7;margin-bottom:28px}
+.pills{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:28px}
+.pill{font-family:'Fira Code',monospace;font-size:11px;padding:5px 14px;border-radius:20px;background:#fff;border:1.5px solid var(--border);color:var(--muted);box-shadow:var(--sh2)}
+.pill b{color:var(--accent)}
+.fcard{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:32px;width:100%;max-width:420px;box-shadow:var(--sh)}
+.fcard h3{font-size:13px;color:var(--muted);margin-bottom:20px;font-family:'Fira Code',monospace;letter-spacing:.5px}
+label{display:block;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;font-weight:600}
+input{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:13px 16px;color:var(--text);font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;margin-bottom:16px;transition:all .2s}
+input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(79,70,229,.12)}
+.btn{width:100%;background:linear-gradient(135deg,#4f46e5,#6366f1);color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:15px;padding:14px;border:none;border-radius:10px;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(79,70,229,.3);margin-top:4px}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(79,70,229,.4)}
+/* QUIZ */
+.qbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.qi{font-size:13px;color:var(--muted);font-weight:500}
+.qi strong{color:var(--accent);font-weight:700}
+.timer{font-family:'Fira Code',monospace;font-size:14px;font-weight:600;background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:6px 16px;color:var(--accent);box-shadow:var(--sh2)}
+.pw{height:6px;background:var(--bg2);border-radius:4px;margin-bottom:24px;overflow:hidden}
+.pb{height:100%;border-radius:4px;background:linear-gradient(90deg,#4f46e5,#0ea5e9);transition:width .5s cubic-bezier(.4,0,.2,1)}
+.qcard{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:28px 30px;margin-bottom:16px;box-shadow:var(--sh)}
+.qtag{display:inline-block;font-family:'Fira Code',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);background:var(--accent-l);padding:4px 10px;border-radius:6px;margin-bottom:14px;font-weight:600}
+.qstem{font-size:16px;font-weight:600;line-height:1.6;margin-bottom:16px}
+.cblock{border-radius:10px;overflow:hidden;margin-bottom:20px;border:1.5px solid #e0e7ff;font-family:'Fira Code',monospace;font-size:13px;line-height:1.9}
+.ctop{background:#1e1b4b;padding:8px 16px;display:flex;align-items:center;gap:7px}
+.dot{width:10px;height:10px;border-radius:50%}
+.d1{background:#ff5f57}.d2{background:#febc2e}.d3{background:#28c840}
+.clang{margin-left:auto;font-size:11px;color:rgba(255,255,255,.4);letter-spacing:1px}
+.cbody{background:#13111f;padding:18px 20px;overflow-x:auto;white-space:pre;color:#cdd6f4}
+.kw{color:#cba6f7}.tp{color:#89b4fa}.nm{color:#fab387}.cm{color:#585b70;font-style:italic}
+.mt{color:#f9e2af}.st{color:#a6e3a1}.vr{color:#f38ba8}.op{color:#89dceb}
+.qask{font-size:14px;color:var(--muted);font-weight:500;background:linear-gradient(135deg,#ede9fe,#e0f2fe);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:12px 16px;margin-bottom:20px;line-height:1.6}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:center;gap:14px;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:13px 18px;cursor:pointer;transition:all .18s}
+.opt:hover:not(.locked){border-color:var(--accent);background:var(--accent-l);transform:translateX(3px)}
+.opt.chosen{border-color:var(--accent);background:var(--accent-l)}
+.opt.right{border-color:var(--green);background:var(--green-l)}
+.opt.bad{border-color:var(--red);background:var(--red-l)}
+.opt.locked{cursor:default;transform:none}
+.ok{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-size:12px;font-weight:700;background:#fff;border:1.5px solid var(--border);color:var(--muted);flex-shrink:0;transition:all .18s}
+.opt.chosen .ok{background:var(--accent);border-color:var(--accent);color:#fff}
+.opt.right .ok{background:var(--green);border-color:var(--green);color:#fff}
+.opt.bad .ok{background:var(--red);border-color:var(--red);color:#fff}
+.ov{font-size:15px;font-weight:500;font-family:'Fira Code',monospace}
+.fb{margin-top:16px;padding:14px 18px;border-radius:10px;font-size:14px;line-height:1.7;display:none}
+.fb.show{display:block}
+.fb.ok2{background:var(--green-l);border:1.5px solid #6ee7b7;color:#065f46}
+.fb.ko{background:var(--red-l);border:1.5px solid #fca5a5;color:#991b1b}
+.fb .exp{margin-top:6px;font-size:13px;opacity:.85;line-height:1.7}
+.navrow{display:flex;justify-content:flex-end;margin-top:6px}
+.btnn{background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:14px;padding:12px 28px;border:none;border-radius:10px;cursor:pointer;display:none;transition:all .2s;box-shadow:0 4px 14px rgba(16,185,129,.3)}
+.btnn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(16,185,129,.4)}
+/* RESULT */
+#result.on{display:block}
+.rhero{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:48px 24px 36px;text-align:center;margin-bottom:24px;box-shadow:var(--sh)}
+.rwho{font-family:'Fira Code',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+.ring{width:170px;height:170px;border-radius:50%;border:4px solid var(--accent);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 24px;background:linear-gradient(135deg,#ede9fe,#e0f2fe);box-shadow:0 0 0 8px rgba(79,70,229,.08),var(--sh)}
+.rn{font-size:52px;font-weight:800;color:var(--accent);line-height:1;font-family:'Fira Code',monospace}
+.rd{font-family:'Fira Code',monospace;font-size:13px;color:var(--muted)}
+.rv{font-size:22px;font-weight:800;margin-bottom:6px}
+.rp{font-family:'Fira Code',monospace;font-size:14px;color:var(--accent);font-weight:600}
+.srow{display:flex;gap:12px;justify-content:center;margin-bottom:32px;flex-wrap:wrap}
+.sc{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:20px 28px;min-width:110px;text-align:center;box-shadow:var(--sh2)}
+.sn{font-size:36px;font-weight:800;font-family:'Fira Code',monospace;line-height:1}
+.sn.g{color:var(--green)}.sn.r{color:var(--red)}.sn.b{color:var(--accent)}
+.sl{font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.rph{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.rph::after{content:'';flex:1;height:2px;background:var(--border);border-radius:2px}
+.ri{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:18px 22px;margin-bottom:12px;text-align:left;border-left-width:4px;box-shadow:var(--sh2)}
+.ri.ok3{border-left-color:var(--green)}.ri.ko2{border-left-color:var(--red)}
+.riq{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.riic{font-size:18px;flex-shrink:0}
+.riqt{font-size:14px;font-weight:600;line-height:1.5}
+.rians{margin-left:28px;font-size:13px;display:flex;flex-direction:column;gap:5px}
+.rirow{display:flex;gap:8px;align-items:flex-start}
+.rilbl{font-family:'Fira Code',monospace;font-size:11px;color:var(--muted);min-width:100px;flex-shrink:0;padding-top:2px;font-weight:600}
+.riv.g{color:var(--green);font-family:'Fira Code',monospace;font-weight:600}
+.riv.r{color:var(--red);font-family:'Fira Code',monospace;font-weight:600}
+.riexp{margin:10px 0 0 28px;padding:10px 14px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--muted);line-height:1.7}
+.rbtn{display:block;margin:28px auto 0;background:transparent;color:var(--accent);border:2px solid var(--accent);font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:14px;padding:12px 32px;border-radius:10px;cursor:pointer;transition:all .2s}
+.rbtn:hover{background:var(--accent-l);transform:translateY(-2px)}
 </style>
 </head>
 <body>
-<div class="container">
+<div class="wrap">
 
-  <!-- INTRO -->
-  <div class="screen active" id="intro-screen">
-    <div class="badge">/ DSA Quiz System /</div>
-    <h1 class="intro-title">Ma'lumotlar Tuzilmasi<br>va Algoritmlar</h1>
-    <p class="intro-sub">20 ta savol · Tasodifiy tartib · Batafsil hisobot</p>
-    <div class="input-group">
-      <div>
-        <label>Ism</label>
-        <input type="text" id="inp-first" placeholder="Isminginzni kiriting" autocomplete="off">
-      </div>
-      <div>
-        <label>Familiya</label>
-        <input type="text" id="inp-last" placeholder="Familiyangizni kiriting" autocomplete="off">
-      </div>
-    </div>
+<div class="screen on" id="intro">
+  <div class="logo">C#</div>
+  <h1 class="ih">Ma'lumotlar Tuzilmasi<br>va <em>Algoritmlar</em></h1>
+  <p class="ip">C# dasturlash tili — for, while, rekursiya va funksiyalarga oid 15 ta interaktiv savol</p>
+  <div class="pills">
+    <div class="pill"><b>15</b> savol</div>
+    <div class="pill"><b>for</b> sikli</div>
+    <div class="pill"><b>while</b> sikli</div>
+    <div class="pill"><b>rekursiya</b></div>
+    <div class="pill"><b>massivlar</b></div>
+    <div class="pill">tasodifiy tartib</div>
+  </div>
+  <div class="fcard">
+    <h3>// talaba ma'lumotlari</h3>
+    <label for="fi">Ism</label>
+    <input id="fi" placeholder="Isminginzni kiriting" autocomplete="off">
+    <label for="fl">Familiya</label>
+    <input id="fl" placeholder="Familiyangizni kiriting" autocomplete="off">
     <button class="btn" onclick="startQuiz()">Testni boshlash →</button>
   </div>
-
-  <!-- QUIZ -->
-  <div class="screen" id="quiz-screen">
-    <div class="quiz-header">
-      <div class="quiz-meta">Savol <span id="q-current">1</span> / <span id="q-total">20</span></div>
-      <div class="quiz-meta">Talaba: <span id="q-name">—</span></div>
-      <div class="timer-badge" id="timer">00:00</div>
-    </div>
-    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-    <div class="question-card">
-      <div class="q-number" id="q-num-label">SAVOL 01</div>
-      <div class="q-text" id="q-text"></div>
-      <div class="options" id="options-container"></div>
-      <div class="feedback-box" id="feedback-box"></div>
-    </div>
-    <div class="quiz-nav">
-      <button class="btn" id="next-btn" onclick="nextQuestion()" style="display:none">Keyingi →</button>
-    </div>
-  </div>
-
-  <!-- RESULT -->
-  <div class="screen" id="result-screen">
-    <div class="result-hero">
-      <div class="badge">/ Test Yakunlandi /</div>
-      <div class="result-name" id="res-name"></div>
-      <div class="result-score-circle">
-        <div class="result-score-num" id="res-score">0</div>
-        <div class="result-score-total" id="res-total">/20</div>
-      </div>
-      <div class="result-label" id="res-label"></div>
-      <div class="result-pct" id="res-pct"></div>
-    </div>
-    <div class="stats-row">
-      <div class="stat-box">
-        <div class="stat-num g" id="st-correct">0</div>
-        <div class="stat-label">TO'G'RI</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-num r" id="st-wrong">0</div>
-        <div class="stat-label">NOTO'G'RI</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-num" id="st-time" style="color:var(--accent3)">0:00</div>
-        <div class="stat-label">VAQT</div>
-      </div>
-    </div>
-
-    <div class="report-title">Batafsil Hisobot</div>
-    <div id="report-container"></div>
-
-    <div class="result-actions">
-      <button class="btn secondary" onclick="retryQuiz()">← Qayta urinish</button>
-    </div>
-  </div>
-
 </div>
 
-<script>
-  function openFullscreen() {
-  let elem = document.documentElement;
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen();
-  } else if (elem.webkitRequestFullscreen) { /* Safari */
-    elem.webkitRequestFullscreen();
-  } else if (elem.msRequestFullscreen) { /* IE11 */
-    elem.msRequestFullscreen();
-  }
-}
+<div class="screen" id="quiz">
+  <div class="qbar">
+    <div class="qi">Savol <strong id="qnum">1</strong>/<strong id="qtot">15</strong>&nbsp;·&nbsp;<span id="qnametop"></span></div>
+    <div class="timer" id="clk">00:00</div>
+  </div>
+  <div class="pw"><div class="pb" id="pbar" style="width:0%"></div></div>
+  <div class="qcard">
+    <span class="qtag" id="qtag">SAVOL 01</span>
+    <div class="qstem" id="qstem"></div>
+    <div id="codearea"></div>
+    <div class="qask" id="qask"></div>
+    <div class="opts" id="optbox"></div>
+    <div class="fb" id="fb"></div>
+  </div>
+  <div class="navrow"><button class="btnn" id="nxtbtn" onclick="nextQ()">Keyingi →</button></div>
+</div>
 
-// ======================== QUESTION BANK ========================
-const QUESTION_BANK = [
-  {
-    id: 1,
-    text: "Quyidagi qaysi variant faqat <code>integer</code> (butun son) turidagi qiymatlarni to'g'ri ifodalaydi?",
-    options: [
-      { text: "42, -7, 0, 1000000", correct: true },
-      { text: "3.14, -2.7, 0.0, 1.0", correct: false },
-      { text: "3.14f, -2.7f, 0.0f", correct: false },
-      { text: "'a', 'z', '0', '!'", correct: false }
-    ],
-    explanation: "Integer (int) — butun sonlar turi bo'lib, kasr qismi bo'lmaydi. Masalan: 42, -7, 0, 1000000. float va double — kasr sonlar, char — belgili tur."
-  },
-  {
-    id: 2,
-    text: "Quyidagi qaysi variant faqat <code>double</code> turidagi qiymatlarni to'g'ri ifodalaydi?",
-    options: [
-      { text: "3.14159265358979, -0.000001, 2.0", correct: true },
-      { text: "3.14f, -2.7f, 1.0f", correct: false },
-      { text: "42, -7, 0, 1000", correct: false },
-      { text: "'A', 'B', 'C'", correct: false }
-    ],
-    explanation: "double — 64-bitli kasr son turi (IEEE 754). Kasr qismli katta aniqlikdagi sonlar: 3.14159265358979 kabi. float esa 32-bitli bo'lib, oxirida 'f' harfi yoziladi."
-  },
-  {
-    id: 3,
-    text: "Quyidagi qaysi variant faqat <code>float</code> turidagi sonlarni to'g'ri ko'rsatadi?",
-    options: [
-      { text: "3.14f, -2.7f, 0.0f, 1.5f", correct: true },
-      { text: "3.14159265358979, -0.000001, 2.0", correct: false },
-      { text: "42, -7, 0, 100", correct: false },
-      { text: "3.14, -2.7, 0.0 (f harfisiz)", correct: false }
-    ],
-    explanation: "float — 32-bitli kasr son. Java, C, C++ kabi tillarda float konstantalari oxiriga 'f' harfi qo'yiladi: 3.14f. 'f' harfisiz yozilsa, bu double hisoblanadi."
-  },
-  {
-    id: 4,
-    text: "Quyidagi qaysi variant faqat <code>char</code> tipidagi o'zgaruvchilarni to'g'ri ifodalaydi?",
-    options: [
-      { text: `'a', 'Z', '5', '@', '\\n'`, correct: true },
-      { text: `"salom", "a", "Z", "5"`, correct: false },
-      { text: `"a", "Z", "5", "@"`, correct: false },
-      { text: `'salom', 'hello', 'uz'`, correct: false }
-    ],
-    explanation: "char — bitta belgini saqlaydi va yozilishida BITTA QAVS ( ' ' ) ishlatiladi. String esa bir nechta belgidan iborat bo'lib, IKKI QAVS ( \" \" ) ishlatiladi. 'salom' kabi bir nechta belgi char bo'la olmaydi!"
-  },
-  {
-    id: 5,
-    text: "<code>ROM</code> qanday xotira turi va uning to'liq inglizcha nomi nima?",
-    options: [
-      { text: "Doimiy (o'qish uchun) xotira — Read-Only Memory", correct: true },
-      { text: "Tezkor operativ xotira — Random Access Memory", correct: false },
-      { text: "Qattiq disk xotirasi — Hard Disk Drive", correct: false },
-      { text: "Qattiq holat xotirasi — Solid State Drive", correct: false }
-    ],
-    explanation: "ROM — Read-Only Memory (faqat o'qish uchun xotira). Bu xotiraga ma'lumot zavodda yoziladi va o'chirilmaydi (kompyuterni yoqish uchun BIOS kabi). Elektrni o'chirsa ham ma'lumot saqlanadi."
-  },
-  {
-    id: 6,
-    text: "<code>RAM</code> qanday xotira vazifasini bajaradi va to'liq inglizcha nomi nima?",
-    options: [
-      { text: "Vaqtinchalik operativ xotira — Random Access Memory", correct: true },
-      { text: "Doimiy o'qish xotirasi — Read-Only Memory", correct: false },
-      { text: "Saqlash qurilmasi — Hard Disk Drive", correct: false },
-      { text: "Tezkor disk xotirasi — Solid State Drive", correct: false }
-    ],
-    explanation: "RAM — Random Access Memory (operativ xotira). Kompyuter ishlab turganida dastur va ma'lumotlarni vaqtincha saqlaydi. Kompyuterni o'chirganda RAM dagi ma'lumotlar yo'qoladi."
-  },
-  {
-    id: 7,
-    text: "<code>HDD</code> qanday xotira turi va to'liq inglizcha nomi nima?",
-    options: [
-      { text: "Magnit diskli doimiy saqlash xotirasi — Hard Disk Drive", correct: true },
-      { text: "Tezkor saqlash qurilmasi — Solid State Drive", correct: false },
-      { text: "Faqat o'qish xotirasi — Read-Only Memory", correct: false },
-      { text: "Operativ xotira — Random Access Memory", correct: false }
-    ],
-    explanation: "HDD — Hard Disk Drive (qattiq disk). Magnit lentali aylanuvchi diskdan foydalanib ma'lumot saqlaydi. SSD ga nisbatan sekinroq, lekin arzonroq va hajmi katta bo'ladi."
-  },
-  {
-    id: 8,
-    text: "<code>SSD</code> qanday xotira turi va to'liq inglizcha nomi nima?",
-    options: [
-      { text: "Flash xotirali tezkor saqlash qurilmasi — Solid State Drive", correct: true },
-      { text: "Magnit diskli xotira — Hard Disk Drive", correct: false },
-      { text: "Doimiy o'qish xotirasi — Read-Only Memory", correct: false },
-      { text: "Operativ xotira — Random Access Memory", correct: false }
-    ],
-    explanation: "SSD — Solid State Drive. Flash (chip) xotirasidan foydalanadi, harakatlanuvchi qismi yo'q. HDD dan 5-10 barobar tez ishlaydi, zarba va tebranishga chidamli."
-  },
-  {
-    id: 9,
-    text: "Quyidagilardan qaysilari <b>primitiv</b> ma'lumotlar tuzilmasiga kiradi?",
-    options: [
-      { text: "Integer, Float, Character, Boolean", correct: true },
-      { text: "Array, Linked List, Stack, Queue", correct: false },
-      { text: "Tree, Graph, Hash Table", correct: false },
-      { text: "Array, Integer, Graph, Boolean", correct: false }
-    ],
-    explanation: "Primitiv ma'lumotlar tuzilmasi — tilning o'zi ta'minlaydigan asosiy turlar: Integer, Float/Double, Character, Boolean. Ular boshqa turlardan tashkil topgan emas."
-  },
-  {
-    id: 10,
-    text: "Quyidagilardan qaysilari <b>non-primitiv</b> (murakkab) ma'lumotlar tuzilmasiga kiradi?",
-    options: [
-      { text: "Array, Linked List, Stack, Queue, Tree, Graph", correct: true },
-      { text: "Integer, Float, Boolean, Char", correct: false },
-      { text: "Integer, Array, Boolean", correct: false },
-      { text: "Faqat Tree va Graph", correct: false }
-    ],
-    explanation: "Non-primitiv ma'lumotlar tuzilmasi primitiv turlar asosida qurilgan murakkab tuzilmalar: Array, Linked List, Stack, Queue, Tree, Graph, Hash Table va boshqalar."
-  },
-  {
-    id: 11,
-    text: "<b>Bitwise operatorlar</b> nima va qaysilar to'g'ri?",
-    options: [
-      { text: "Sonlarning ikkilik (bit) ko'rinishida ishlash uchun operatorlar: &, |, ^, ~, <<, >>", correct: true },
-      { text: "Mantiqiy solishtirish uchun: ==, !=, >, <, >=, <=", correct: false },
-      { text: "Arifmetik amallar: +, -, *, /, %", correct: false },
-      { text: "Qiymat berish uchun: =, +=, -=, *=", correct: false }
-    ],
-    explanation: "Bitwise operatorlar sonlarning ikkilik (binary) ko'rinishidagi alohida bitlariga amal bajaradi. Asosiy bitwise operatorlar: AND(&), OR(|), XOR(^), NOT(~), Left Shift(<<), Right Shift(>>)."
-  },
-  {
-    id: 12,
-    text: "<b>12 & 10</b> (bitwise AND) operatsiyasining natijasi qanday?",
-    options: [
-      { text: "8", correct: true },
-      { text: "14", correct: false },
-      { text: "22", correct: false },
-      { text: "2", correct: false }
-    ],
-    explanation: "12 = 1100₂, 10 = 1010₂. AND: faqat ikkala bit ham 1 bo'lsa natija 1.\n1100 & 1010 = 1000₂ = 8."
-  },
-  {
-    id: 13,
-    text: "<b>5 | 3</b> (bitwise OR) operatsiyasining natijasi qanday?",
-    options: [
-      { text: "7", correct: true },
-      { text: "1", correct: false },
-      { text: "15", correct: false },
-      { text: "6", correct: false }
-    ],
-    explanation: "5 = 101₂, 3 = 011₂. OR: kamida bitta bit 1 bo'lsa natija 1.\n101 | 011 = 111₂ = 7."
-  },
-  {
-    id: 14,
-    text: "<b>9 ^ 5</b> (bitwise XOR) operatsiyasining natijasi qanday?",
-    options: [
-      { text: "12", correct: true },
-      { text: "14", correct: false },
-      { text: "4", correct: false },
-      { text: "1", correct: false }
-    ],
-    explanation: "9 = 1001₂, 5 = 0101₂. XOR: faqat bitlar FARQLI bo'lsa natija 1.\n1001 ^ 0101 = 1100₂ = 12."
-  },
-  {
-    id: 15,
-    text: "<b>20 >> 2</b> (bitwise right shift) operatsiyasining natijasi qanday?",
-    options: [
-      { text: "5", correct: true },
-      { text: "80", correct: false },
-      { text: "10", correct: false },
-      { text: "40", correct: false }
-    ],
-    explanation: "20 = 10100₂. 2 bit o'ngga siljitilsa: 00101₂ = 5. Right shift >> n — sonni 2ⁿ ga bo'lishga ekvivalent. 20 / 4 = 5."
-  },
-  {
-    id: 16,
-    text: "<b>3 << 3</b> (bitwise left shift) operatsiyasining natijasi qanday?",
-    options: [
-      { text: "24", correct: true },
-      { text: "6", correct: false },
-      { text: "9", correct: false },
-      { text: "12", correct: false }
-    ],
-    explanation: "3 = 011₂. 3 bit chapga siljitilsa: 011000₂ = 24. Left shift << n — sonni 2ⁿ ga ko'paytirishga ekvivalent. 3 × 8 = 24."
-  },
-  {
-    id: 17,
-    text: "<b>~6</b> (bitwise NOT) operatsiyasining natijasi qanday? (Java / C, 32-bit int)",
-    options: [
-      { text: "-7", correct: true },
-      { text: "7", correct: false },
-      { text: "-6", correct: false },
-      { text: "249", correct: false }
-    ],
-    explanation: "Bitwise NOT (~) — barcha bitlarni teskari qiladi. ~n = -(n+1) formula bilan hisoblanadi. ~6 = -(6+1) = -7. Bu ikki-komplementli (two's complement) raqamlash tizimidan kelib chiqadi."
-  },
-  {
-    id: 18,
-    text: "<b>Tarmoqlanuvchi algoritm</b> dasturlashda qaysi operator yordamida amalga oshiriladi?",
-    options: [
-      { text: "if / else if / else (shartli operator)", correct: true },
-      { text: "while / for / do-while (takrorlash operatori)", correct: false },
-      { text: "print / output operatori", correct: false },
-      { text: "Faqat switch-case operatori", correct: false }
-    ],
-    explanation: "Tarmoqlanuvchi algoritm — shartga qarab turli yo'nalishda davom etadi. Dasturlashda bu if / else if / else yoki switch-case operatorlari orqali ifodalanadi. Masalan: if (shart) { A blok } else { B blok }."
-  },
-  {
-    id: 19,
-    text: "<b>Takrorlanuvchi algoritm</b> dasturlashda qaysi operator yordamida amalga oshiriladi?",
-    options: [
-      { text: "while / for / do-while (tsikl operatorlari)", correct: true },
-      { text: "if / else (shartli operator)", correct: false },
-      { text: "print / output operatori", correct: false },
-      { text: "import / include operatori", correct: false }
-    ],
-    explanation: "Takrorlanuvchi algoritm (tsikl/loop) — biror amal yoki blok bir necha marta bajariladi. Dasturlashda while, for, do-while kabi tsikl operatorlari ishlatiladi."
-  },
-  {
-    id: 20,
-    text: "Quyidagi misollardan qaysi biri <b>chiziqli algoritmga</b> misol bo'la oladi?",
-    options: [
-      { text: "Ikki sonni qo'shib natijani ekranga chiqarish: a=5; b=3; c=a+b; print(c)", correct: true },
-      { text: "Sonni juft yoki toq ekanligini tekshirib, turli xabar chiqarish", correct: false },
-      { text: "1 dan 100 gacha sonlarni yig'indisini hisoblash (tsikl)", correct: false },
-      { text: "Foydalanuvchi 'ha' deguncha savol berish", correct: false }
-    ],
-    explanation: "Chiziqli algoritm — har bir amal ketma-ket, shartlanmagan va takrorlanmagan holda bajariladi. Masalan: a=5; b=3; c=a+b; print(c) — bu to'g'ridan-to'g'ri ketma-ket bajariluvchi chiziqli algoritmdir."
-  }
+<div class="screen" id="result">
+  <div class="rhero">
+    <div class="rwho" id="rwho"></div>
+    <div class="ring"><div class="rn" id="rsc">0</div><div class="rd" id="rof">/15</div></div>
+    <div class="rv" id="rverd"></div>
+    <div class="rp" id="rpct"></div>
+  </div>
+  <div class="srow">
+    <div class="sc"><div class="sn g" id="stc">0</div><div class="sl">To'g'ri</div></div>
+    <div class="sc"><div class="sn r" id="stw">0</div><div class="sl">Noto'g'ri</div></div>
+    <div class="sc"><div class="sn b" id="stt">0:00</div><div class="sl">Vaqt</div></div>
+  </div>
+  <div class="rph">// Batafsil hisobot</div>
+  <div id="repbox"></div>
+  <button class="rbtn" onclick="retryQuiz()">← Qayta urinish</button>
+</div>
+
+</div>
+<script>
+const QB=[
+{tag:"for",stem:"Quyidagi C# kodi berilgan:",
+code:`<span class="kw">int</span> <span class="vr">a</span> <span class="op">=</span> <span class="nm">3</span>, <span class="vr">b</span> <span class="op">=</span> <span class="nm">2</span>, <span class="vr">s</span> <span class="op">=</span> <span class="nm">0</span>;
+<span class="kw">for</span> (<span class="kw">int</span> <span class="vr">i</span> <span class="op">=</span> <span class="nm">0</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">a</span>; <span class="vr">i</span>++)
+{
+    <span class="vr">s</span> <span class="op">+=</span> <span class="vr">b</span>;
+    <span class="vr">b</span>++;
+}
+<span class="mt">Console</span>.<span class="mt">WriteLine</span>(<span class="vr">s</span>);`,
+ask:"Berilgan: a=3, b=2 — dastur qanday natija chiqaradi?",
+opts:["9","10","11","12"],cor:0,
+exp:"i=0: s+=b(2)=2, b→3. i=1: s+=b(3)=5, b→4. i=2: s+=b(4)=9, b→5. Jami s=2+3+4=9."},
+
+{tag:"for",stem:"Quyidagi C# kodi berilgan:",
+code:`<span class="kw">int</span> <span class="vr">n</span> <span class="op">=</span> <span class="nm">5</span>, <span class="vr">x</span> <span class="op">=</span> <span class="nm">1</span>;
+<span class="kw">for</span> (<span class="kw">int</span> <span class="vr">i</span> <span class="op">=</span> <span class="nm">1</span>; <span class="vr">i</span> <span class="op">&lt;=</span> <span class="vr">n</span>; <span class="vr">i</span>++)
+{
+    <span class="vr">x</span> <span class="op">*=</span> <span class="vr">i</span>;
+}
+<span class="mt">Console</span>.<span class="mt">WriteLine</span>(<span class="vr">x</span>);`,
+ask:"Berilgan: n=5 — dastur qanday natija chiqaradi?",
+opts:["10","24","120","125"],cor:2,
+exp:"5! = 1×2×3×4×5 = 120. Bu faktorial hisoblash kodi."},
+
+{tag:"for",stem:"Quyidagi C# kodi berilgan:",
+code:`<span class="kw">int</span> <span class="vr">n</span> <span class="op">=</span> <span class="nm">6</span>, <span class="vr">sum</span> <span class="op">=</span> <span class="nm">0</span>;
+<span class="kw">for</span> (<span class="kw">int</span> <span class="vr">i</span> <span class="op">=</span> <span class="nm">0</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">n</span>; <span class="vr">i</span> <span class="op">+=</span> <span class="nm">2</span>)
+{
+    <span class="vr">sum</span> <span class="op">+=</span> <span class="vr">i</span>;
+}
+<span class="mt">Console</span>.<span class="mt">WriteLine</span>(<span class="vr">sum</span>);`,
+ask:"Berilgan: n=6 — dastur qanday natija chiqaradi?",
+opts:["6","8","10","12"],cor:0,
+exp:"i = 0, 2, 4 (6 < 6 shart bajarilmaydi). sum = 0+2+4 = 6."},
+
+{tag:"while",stem:"Quyidagi C# kodi berilgan:",
+code:`<span class="kw">int</span> <span class="vr">n</span> <span class="op">=</span> <span class="nm">10</span>, <span class="vr">cnt</span> <span class="op">=</span> <span class="nm">0</span>;
+<span class="kw">while</span> (<span class="vr">n</span> <span class="op">&gt;</span> <span class="nm">0</span>)
+{
+    <span class="vr">n</span> <span class="op">/=</span> <span class="nm">2</span>;
+    <span class="vr">cnt</span>++;
+}
+<span class="mt">Console</span>.<span class="mt">WriteLine</span>(<span class="vr">cnt</span>);`,
+ask:"Berilgan: n=10 — dastur qanday natija chiqaradi?",
+opts:["3","4","5","6"],cor:1,
+exp:"10→5→2→1→0. Iteratsiyalar: n=10,5,2,1 > 0 ✓. n=0 da to'xtaydi. cnt=4."},
+
+{tag:"while",stem:"Quyidagi C# kodi berilgan:",
+code:`<span class="kw">int</span> <span class="vr">a</span> <span class="op">=</span> <span class="nm">48</span>, <span class="vr">b</span> <span class="op">=</span> <span class="nm">18</span>;
+<span class="kw">while</span> (<span class="vr">a</span> <span class="op">!=</span> <span class="vr">b</span>)
+{
+    <span class="kw">if</span> (<span class="vr">a</span> <span class="op">&gt;</span> <span class="vr">b</span>) <span class="vr">a</span> <span class="op">-=</span> <span class="vr">b</span>;
+    <span class="kw">else</span> <span class="vr">b</span> <span class="op">-=</span> <span class="vr">a</span>;
+}
+<span class="mt">Console</span>.<span class="mt">WriteLine</span>(<span class="vr">a</span>);`,
+ask:"Berilgan: a=48, b=18 — dastur qanday natija chiqaradi?",
+opts:["3","6","12","18"],cor:1,
+exp:"Evklid (ayirish): 48-18=30, 30-18=12, 18-12=6, 12-6=6. a=b=6. EKUB(48,18)=6."},
+
+{tag:"for",stem:"Quyidagi C# kodi berilgan:",
+code:`<span class="kw">int</span> <span class="vr">n</span> <span class="op">=</span> <span class="nm">4</span>, <span class="vr">res</span> <span class="op">=</span> <span class="nm">0</span>;
+<span class="kw">for</span> (<span class="kw">int</span> <span class="vr">i</span> <span class="op">=</span> <span class="nm">1</span>; <span class="vr">i</span> <span class="op">&lt;=</span> <span class="vr">n</span>; <span class="vr">i</span>++)
+{
+    <span class="vr">res</span> <span class="op">=</span> <span class="vr">res</span> <span class="op">*</span> <span class="nm">10</span> <span class="op">+</span> <span class="vr">i</span>;
+}
+<span class="mt">Console</span>.<span class="mt">WriteLine</span>(<span class="vr">res</span>);`,
+ask:"Berilgan: n=4 — dastur qanday natija chiqaradi?",
+opts:["10","123","1234","4321"],cor:2,
+exp:"i=1: res=1. i=2: res=12. i=3: res=123. i=4: res=1234."},
+
+{tag:"funksiya+for",stem:"Quyidagi C# kodi berilgan:",
+code:`<span class="kw">static int</span> <span class="mt">F</span>(<span class="kw">int</span> <span class="vr">x</span>) <span class="op">=&gt;</span> <span class="vr">x</span> <span class="op">*</span> <span class="vr">x</span> <span class="op">-</span> <span class="nm">2</span> <span class="op">*</span> <span class="vr">x</span>;
+
+<span class="kw">int</span> <span class="vr">a</span> <span class="op">=</span> <span class="nm">1</span>, <span class="vr">b</span> <span class="op">=</span> <span class="nm">4</span>, <span class="vr">s</span> <span class="op">=</span> <span class="nm">0</span>;
+<span class="kw">for</span> (<span class="kw">int</span> <span class="vr">i</span> <span class="op">=</span> <span class="vr">a</span>; <span class="vr">i</span> <span class="op">&lt;=</span> <span class="vr">b</span>; <span class="vr">i</span>++)
+{
+    <span class="vr">s</span> <span class="op">+=</span> <span class="mt">F</span>(<span class="vr">i</span>);
+}
+<span class="mt">Console</span>.<span class="mt">WriteLine</span>(<span class="vr">s</span>);`,
+ask:"Berilgan: a=1, b=4 — dastur qanday natija chiqaradi?",
+opts:["6","8","10","12"],cor:2,
+exp:"F(x)=x²-2x. F(1)=1-2=-1. F(2)=4-4=0. F(3)=9-6=3. F(4)=16-8=8. s=-1+0+3+8=10."},
+
+{tag:"rekursiya",stem:"Quyidagi C# kodi berilgan:",
+code:`<span class="kw">static int</span> <span class="mt">G</span>(<span class="kw">int</span> <span class="vr">n</span>)
+{
+    <span class="kw">if</span> (<span class="vr">n</span> <span class="op">==</span> <span class="nm">0</span>) <span class="kw">return</span> <span class="nm">0</span>;
+    <span class="kw">return</span> <span class="vr">n</span> <span class="op">+</span> <span class="mt">G</span>(<span class="vr">n</span> <span class="op">-</span> <span class="nm">1</span>);
+}
+<span class="mt">Console</span>.<span class="mt">WriteLine</span>(<span class="mt">G</span>(<span class="nm">5</span>));`,
+ask:"Dastur qanday natija chiqaradi?",
+opts:["10","15","20","25"],cor:1,
+exp:"G(5)=5+G(4)=5+4+G(3)=5+4+3+G(2)=5+4+3+2+G(1)=5+4+3+2+1+G(0)=15."},
+
+{tag:"funksiya+while",stem:"Quyidagi C# kodi berilgan:",
+code:`<span class="kw">static int</span> <span class="mt">DigSum</span>(<span class="kw">int</span> <span class="vr">n</span>)
+{
+    <span class="kw">int</span> <span class="vr">s</span> <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">while</span> (<span class="vr">n</span> <span class="op">&gt;</span> <span class="nm">0</span>)
+    {
+        <span class="vr">s</span> <span class="op">+=</span> <span class="vr">n</span> <span class="op">%</span> <span class="nm">10</span>;
+        <span class="vr">n</span> <span class="op">/=</span> <span class="nm">10</span>;
+    }
+    <span class="kw">return</span> <span class="vr">s</span>;
+}
+<span class="mt">Console</span>.<span class="mt">WriteLine</span>(<span class="mt">DigSum</span>(<span class="nm">5072</span>));`,
+ask:"Dastur qanday natija chiqaradi?",
+opts:["12","14","13","15"],cor:1,
+exp:"5072 raqamlari: 5+0+7+2 = 14."},
+
+{tag:"for+massiv",stem:"Quyidagi C# kodi berilgan:",
+code:`<span class="kw">int</span>[] <span class="vr">a</span> <span class="op">=</span> { <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">5</span>, <span class="nm">7</span> };
+<span class="kw">int</span> <span class="vr">p</span> <span class="op">=</span> <span class="nm">1</span>;
+<span class="kw">for</span> (<span class="kw">int</span> <span class="vr">i</span> <span class="op">=</span> <span class="nm">0</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">a</span>.<span class="mt">Length</span>; <span class="vr">i</span>++)
+{
+    <span class="kw">if</span> (<span class="vr">a</span>[<span class="vr">i</span>] <span class="op">%</span> <span class="nm">2</span> <span class="op">==</span> <span class="nm">1</span>) <span class="vr">p</span> <span class="op">*=</span> <span class="vr">a</span>[<span class="vr">i</span>];
+}
+<span class="mt">Console</span>.<span class="mt">WriteLine</span>(<span class="vr">p</span>);`,
+ask:"Dastur qanday natija chiqaradi?",
+opts:["105","210","35","17"],cor:0,
+exp:"Toq sonlar: 3, 5, 7. Ko'paytma: 3×5×7 = 105. (2 juft, p ga qo'shilmaydi)"},
+
+{tag:"while+massiv",stem:"Quyidagi C# kodi berilgan:",
+code:`<span class="kw">int</span>[] <span class="vr">a</span> <span class="op">=</span> { <span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span> };
+<span class="kw">int</span> <span class="vr">i</span> <span class="op">=</span> <span class="nm">0</span>, <span class="vr">sum</span> <span class="op">=</span> <span class="nm">0</span>;
+<span class="kw">while</span> (<span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">a</span>.<span class="mt">Length</span>)
+{
+    <span class="kw">if</span> (<span class="vr">i</span> <span class="op">%</span> <span class="nm">2</span> <span class="op">==</span> <span class="nm">0</span>) <span class="vr">sum</span> <span class="op">+=</span> <span class="vr">a</span>[<span class="vr">i</span>];
+    <span class="vr">i</span>++;
+}
+<span class="mt">Console</span>.<span class="mt">WriteLine</span>(<span class="vr">sum</span>);`,
+ask:"Dastur qanday natija chiqaradi?",
+opts:["6","9","8","10"],cor:1,
+exp:"Juft indekslar: i=0→a[0]=1, i=2→a[2]=3, i=4→a[4]=5. sum=1+3+5=9."},
+
+{tag:"funksiya+tub",stem:"Quyidagi C# kodi berilgan:",
+code:`<span class="kw">static bool</span> <span class="mt">IsPrime</span>(<span class="kw">int</span> <span class="vr">n</span>)
+{
+    <span class="kw">if</span> (<span class="vr">n</span> <span class="op">&lt;</span> <span class="nm">2</span>) <span class="kw">return</span> <span class="kw">false</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> <span class="vr">i</span> <span class="op">=</span> <span class="nm">2</span>; <span class="vr">i</span> <span class="op">*</span> <span class="vr">i</span> <span class="op">&lt;=</span> <span class="vr">n</span>; <span class="vr">i</span>++)
+        <span class="kw">if</span> (<span class="vr">n</span> <span class="op">%</span> <span class="vr">i</span> <span class="op">==</span> <span class="nm">0</span>) <span class="kw">return</span> <span class="kw">false</span>;
+    <span class="kw">return</span> <span class="kw">true</span>;
+}
+<span class="kw">int</span> <span class="vr">cnt</span> <span class="op">=</span> <span class="nm">0</span>;
+<span class="kw">for</span> (<span class="kw">int</span> <span class="vr">x</span> <span class="op">=</span> <span class="nm">10</span>; <span class="vr">x</span> <span class="op">&lt;=</span> <span class="nm">20</span>; <span class="vr">x</span>++)
+    <span class="kw">if</span> (<span class="mt">IsPrime</span>(<span class="vr">x</span>)) <span class="vr">cnt</span>++;
+<span class="mt">Console</span>.<span class="mt">WriteLine</span>(<span class="vr">cnt</span>);`,
+ask:"10 dan 20 gacha oraliqda nechta tub son bor?",
+opts:["3","4","5","6"],cor:1,
+exp:"10-20 oraliqda tub sonlar: 11, 13, 17, 19 — jami 4 ta."},
+
+{tag:"for+break",stem:"Quyidagi C# kodi berilgan:",
+code:`<span class="kw">int</span> <span class="vr">n</span> <span class="op">=</span> <span class="nm">20</span>, <span class="vr">ans</span> <span class="op">=</span> <span class="op">-</span><span class="nm">1</span>;
+<span class="kw">for</span> (<span class="kw">int</span> <span class="vr">i</span> <span class="op">=</span> <span class="nm">2</span>; <span class="vr">i</span> <span class="op">&lt;=</span> <span class="vr">n</span>; <span class="vr">i</span>++)
+{
+    <span class="kw">if</span> (<span class="vr">n</span> <span class="op">%</span> <span class="vr">i</span> <span class="op">==</span> <span class="nm">0</span>)
+    {
+        <span class="vr">ans</span> <span class="op">=</span> <span class="vr">i</span>;
+        <span class="kw">break</span>;
+    }
+}
+<span class="mt">Console</span>.<span class="mt">WriteLine</span>(<span class="vr">ans</span>);`,
+ask:"Berilgan: n=20 — dastur qanday natija chiqaradi?",
+opts:["2","4","5","10"],cor:0,
+exp:"20 ni bo'ladigan birinchi son i=2 (20%2=0). break darhol to'xtatadi. ans=2."},
+
+{tag:"while+Collatz",stem:"Quyidagi C# kodi berilgan:",
+code:`<span class="kw">int</span> <span class="vr">n</span> <span class="op">=</span> <span class="nm">6</span>, <span class="vr">steps</span> <span class="op">=</span> <span class="nm">0</span>;
+<span class="kw">while</span> (<span class="vr">n</span> <span class="op">!=</span> <span class="nm">1</span>)
+{
+    <span class="kw">if</span> (<span class="vr">n</span> <span class="op">%</span> <span class="nm">2</span> <span class="op">==</span> <span class="nm">0</span>) <span class="vr">n</span> <span class="op">/=</span> <span class="nm">2</span>;
+    <span class="kw">else</span> <span class="vr">n</span> <span class="op">=</span> <span class="nm">3</span> <span class="op">*</span> <span class="vr">n</span> <span class="op">+</span> <span class="nm">1</span>;
+    <span class="vr">steps</span>++;
+}
+<span class="mt">Console</span>.<span class="mt">WriteLine</span>(<span class="vr">steps</span>);`,
+ask:"Berilgan: n=6 — nechta iteratsiya ishlaydi?",
+opts:["6","8","7","9"],cor:1,
+exp:"6→3→10→5→16→8→4→2→1. Qadamlar: 6/2=3, 3*3+1=10, 10/2=5, 5*3+1=16, 16/2=8, 8/2=4, 4/2=2, 2/2=1. Jami 8 qadam."},
+
+{tag:"rekursiya+Fibonacci",stem:"Quyidagi C# kodi berilgan:",
+code:`<span class="kw">static int</span> <span class="mt">Fib</span>(<span class="kw">int</span> <span class="vr">n</span>)
+{
+    <span class="kw">if</span> (<span class="vr">n</span> <span class="op">&lt;=</span> <span class="nm">2</span>) <span class="kw">return</span> <span class="nm">1</span>;
+    <span class="kw">return</span> <span class="mt">Fib</span>(<span class="vr">n</span> <span class="op">-</span> <span class="nm">1</span>) <span class="op">+</span> <span class="mt">Fib</span>(<span class="vr">n</span> <span class="op">-</span> <span class="nm">2</span>);
+}
+<span class="mt">Console</span>.<span class="mt">WriteLine</span>(<span class="mt">Fib</span>(<span class="nm">6</span>));`,
+ask:"Dastur qanday natija chiqaradi?",
+opts:["5","8","13","21"],cor:1,
+exp:"Fib: F1=1, F2=1, F3=2, F4=3, F5=5, F6=8. Fib(6)=8."}
 ];
 
-// ======================== STATE ========================
-let studentName = '';
-let shuffledQuestions = [];
-let currentQ = 0;
-let answers = [];
-let selectedOption = null;
-let answered = false;
-let timerInterval = null;
-let startTime = null;
-let elapsedSeconds = 0;
+let student='',qs=[],cur=0,answers=[],answered=false,timerID=null,t0=0,elapsed=0;
+const K=['A','B','C','D'];
+const pad=n=>String(n).padStart(2,'0');
+const fmt=s=>pad(Math.floor(s/60))+':'+pad(s%60);
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on')}
 
-// ======================== SHUFFLE ========================
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
+function startQuiz(){
+  const fi=document.getElementById('fi').value.trim(),fl=document.getElementById('fl').value.trim();
+  if(!fi||!fl){alert('Iltimos, ism va familiyangizni kiriting!');return}
+  student=fi+' '+fl;
+  qs=shuffle(QB.map(q=>({...q,opts:[...q.opts]})));
+  cur=0;answers=[];answered=false;
+  document.getElementById('qnametop').textContent=student;
+  document.getElementById('qtot').textContent=qs.length;
+  show('quiz');
+  t0=Date.now();
+  timerID=setInterval(()=>{elapsed=Math.floor((Date.now()-t0)/1000);document.getElementById('clk').textContent=fmt(elapsed)},1000);
+  renderQ();
 }
 
-function shuffleOptions(q) {
-  const opts = shuffle(q.options.map((o, i) => ({ ...o, origIdx: i })));
-  return { ...q, options: opts };
-}
-
-// ======================== TIMER ========================
-function startTimer() {
-  startTime = Date.now();
-  timerInterval = setInterval(updateTimer, 1000);
-}
-
-function updateTimer() {
-  elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
-  const m = String(Math.floor(elapsedSeconds / 60)).padStart(2, '0');
-  const s = String(elapsedSeconds % 60).padStart(2, '0');
-  document.getElementById('timer').textContent = `${m}:${s}`;
-}
-
-function stopTimer() {
-  clearInterval(timerInterval);
-  elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
-}
-
-// ======================== START ========================
-function startQuiz() {
-  const first = document.getElementById('inp-first').value.trim();
-  const last  = document.getElementById('inp-last').value.trim();
-  if (!first || !last) {
-    alert("Iltimos, ism va familiyangizni kiriting!");
-    return;
-  }
-  studentName = first + ' ' + last;
-  shuffledQuestions = shuffle(QUESTION_BANK).map(shuffleOptions);
-  currentQ = 0;
-  answers = [];
-  selectedOption = null;
-  answered = false;
-
-  document.getElementById('q-total').textContent = shuffledQuestions.length;
-  document.getElementById('q-name').textContent = studentName;
-
-  showScreen('quiz-screen');
-  startTimer();
-  renderQuestion();
-}
-
-// ======================== RENDER ========================
-function renderQuestion() {
-  const q = shuffledQuestions[currentQ];
-  const total = shuffledQuestions.length;
-
-  document.getElementById('q-current').textContent = currentQ + 1;
-  document.getElementById('q-num-label').textContent = `SAVOL ${String(currentQ + 1).padStart(2, '0')}`;
-  document.getElementById('q-text').innerHTML = q.text;
-  document.getElementById('progress-fill').style.width = `${((currentQ) / total) * 100}%`;
-
-  const container = document.getElementById('options-container');
-  container.innerHTML = '';
-  const LABELS = ['A', 'B', 'C', 'D'];
-
-  q.options.forEach((opt, i) => {
-    const div = document.createElement('div');
-    div.className = 'option';
-    div.innerHTML = `<span class="opt-key">${LABELS[i]}</span><span class="opt-text">${opt.text}</span>`;
-    div.onclick = () => selectOption(i);
-    container.appendChild(div);
+function renderQ(){
+  const q=qs[cur];
+  document.getElementById('qnum').textContent=cur+1;
+  document.getElementById('qtag').textContent='SAVOL '+pad(cur+1)+' · '+q.tag.toUpperCase();
+  document.getElementById('qstem').textContent=q.stem;
+  document.getElementById('pbar').style.width=(cur/qs.length*100)+'%';
+  document.getElementById('codearea').innerHTML=`<div class="cblock"><div class="ctop"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="clang">C#</span></div><div class="cbody">${q.code}</div></div>`;
+  document.getElementById('qask').textContent=q.ask;
+  const ob=document.getElementById('optbox');ob.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const d=document.createElement('div');d.className='opt';
+    d.innerHTML=`<span class="ok">${K[i]}</span><span class="ov">${o}</span>`;
+    d.onclick=()=>pick(i);ob.appendChild(d);
   });
-
-  document.getElementById('feedback-box').className = 'feedback-box';
-  document.getElementById('feedback-box').innerHTML = '';
-  document.getElementById('next-btn').style.display = 'none';
-  selectedOption = null;
-  answered = false;
+  document.getElementById('fb').className='fb';document.getElementById('fb').innerHTML='';
+  document.getElementById('nxtbtn').style.display='none';answered=false;
 }
 
-function selectOption(idx) {
+function pick(idx) {
   if (answered) return;
   answered = true;
-  selectedOption = idx;
-
-  const q = shuffledQuestions[currentQ];
-  const opts = document.querySelectorAll('.option');
-  const LABELS = ['A', 'B', 'C', 'D'];
-  let correctIdx = q.options.findIndex(o => o.correct);
-  const isCorrect = idx === correctIdx;
-
-  opts.forEach((el, i) => {
-    el.classList.add('disabled');
-    if (i === correctIdx) el.classList.add('correct');
-    if (i === idx && !isCorrect) el.classList.add('wrong');
-  });
-  if (isCorrect) opts[idx].classList.add('selected');
-
-  // Feedback
-  const fb = document.getElementById('feedback-box');
-  if (isCorrect) {
-    fb.className = 'feedback-box correct-fb show';
-    fb.innerHTML = `✅ To'g'ri javob!<div class="explanation">${q.explanation}</div>`;
-  } else {
-    fb.className = 'feedback-box wrong-fb show';
-    fb.innerHTML = `❌ Noto'g'ri! To'g'ri javob: <b>${LABELS[correctIdx]}. ${q.options[correctIdx].text}</b><div class="explanation">${q.explanation}</div>`;
-  }
-
-  answers.push({
-    question: q.text,
-    selected: q.options[idx].text,
-    correct: q.options[correctIdx].text,
-    isCorrect,
-    explanation: q.explanation,
-    selectedLabel: LABELS[idx],
-    correctLabel: LABELS[correctIdx]
+  const q = qs[cur], ci = q.cor, ok = idx === ci;
+  
+  document.querySelectorAll('.opt').forEach((el, i) => {
+    el.classList.add('locked');
+    if (i === ci) el.classList.add('right');
+    if (i === idx && !ok) el.classList.add('bad');
   });
 
-  document.getElementById('next-btn').style.display = 'inline-flex';
-  const isLast = currentQ === shuffledQuestions.length - 1;
-  document.getElementById('next-btn').textContent = isLast ? 'Natijani ko\'rish →' : 'Keyingi →';
+  if (ok) document.querySelectorAll('.opt')[idx].classList.add('chosen');
+  
+  const fb = document.getElementById('fb');
+  fb.className = ok ? 'fb ok2 show' : 'fb ko show';
+  fb.innerHTML = ok ? `✅ <b>To'g'ri javob!</b><div class="exp">${q.exp}</div>` : `❌ <b>Noto'g'ri!</b> To'g'ri javob: <b>${K[ci]}. ${q.opts[ci]}</b><div class="exp">${q.exp}</div>`;
+  
+  answers.push({ qt: q.ask, tag: q.tag, sel: `${K[idx]}. ${q.opts[idx]}`, cor: `${K[ci]}. ${q.opts[ci]}`, ok, exp: q.exp });
+  
+  const nb = document.getElementById('nxtbtn');
+  nb.style.display = 'inline-block';
+  nb.textContent = cur === qs.length - 1 ? "Natijani ko'rish →" : "Keyingi →";
 }
 
-function nextQuestion() {
-  currentQ++;
-  if (currentQ >= shuffledQuestions.length) {
-    showResults();
-  } else {
-    renderQuestion();
-  }
+function nextQ() {
+  cur++;
+  if (cur >= qs.length) showResult();
+  else renderQ();
 }
 
-// ======================== RESULTS ========================
-function showResults() {
-  stopTimer();
-  const correct = answers.filter(a => a.isCorrect).length;
-  const wrong = answers.length - correct;
-  const pct = Math.round((correct / answers.length) * 100);
+function showResult() {
+  clearInterval(timerID);
+  const duration = Math.floor((Date.now() - t0) / 1000);
+  const c = answers.filter(a => a.ok).length;
+  const w = answers.length - c;
+  const pct = Math.round((c / answers.length) * 100);
+  const timeStr = fmt(duration);
 
-  let label = pct >= 85 ? "A'lo natija! 🎉" :
-              pct >= 70 ? "Yaxshi natija! 👍" :
-              pct >= 50 ? "Qoniqarli 📚" : "Ko'proq o'qing 💪";
+  document.getElementById('rwho').textContent = student;
+  document.getElementById('rsc').textContent = c;
+  document.getElementById('rof').textContent = '/' + answers.length;
+  document.getElementById('rpct').textContent = pct + "% to'g'ri javob";
+  document.getElementById('stc').textContent = c;
+  document.getElementById('stw').textContent = w;
+  document.getElementById('stt').textContent = timeStr;
 
-  document.getElementById('res-name').textContent = studentName;
-  document.getElementById('res-score').textContent = correct;
-  document.getElementById('res-total').textContent = `/${answers.length}`;
-  document.getElementById('res-label').textContent = label;
-  document.getElementById('res-pct').textContent = `${pct}% to'g'ri`;
-  document.getElementById('st-correct').textContent = correct;
-  document.getElementById('st-wrong').textContent = wrong;
+  const vd = pct >= 85 ? "A'lo natija! 🏆" : pct >= 70 ? "Yaxshi natija! 👍" : pct >= 50 ? "Qoniqarli 📚" : "Ko'proq mashq kerak 💪";
+  document.getElementById('rverd').textContent = vd;
 
-  const m = String(Math.floor(elapsedSeconds / 60)).padStart(2, '0');
-  const s = String(elapsedSeconds % 60).padStart(2, '0');
-  document.getElementById('st-time').textContent = `${m}:${s}`;
-
-  // Report
-  const report = document.getElementById('report-container');
-  report.innerHTML = '';
-  answers.forEach((ans, i) => {
-    const div = document.createElement('div');
-    div.className = `report-item ${ans.isCorrect ? 'r-correct' : 'r-wrong'}`;
-
-    let wrongRow = ans.isCorrect ? '' : `
-      <div class="r-answer">
-        <span class="r-answer-label">✅ To'g'ri:</span>
-        <span class="r-answer-val c">${ans.correctLabel}. ${ans.correct}</span>
-      </div>`;
-
-    div.innerHTML = `
-      <div class="r-q-header">
-        <div class="r-icon">${ans.isCorrect ? '✅' : '❌'}</div>
-        <div class="r-q-text">${i+1}. ${ans.question}</div>
+  const rb = document.getElementById('repbox');
+  rb.innerHTML = '';
+  answers.forEach((a, i) => {
+    const d = document.createElement('div');
+    d.className = 'ri ' + (a.ok ? 'ok3' : 'ko2');
+    const wr = a.ok ? '' : `<div class="rirow"><span class="rilbl">✅ To'g'ri:</span><span class="riv g">${a.cor}</span></div>`;
+    d.innerHTML = `
+      <div class="riq">
+        <div class="riqt">${i + 1}. ${a.qt}</div>
       </div>
-      <div class="r-answers">
-        <div class="r-answer">
-          <span class="r-answer-label">Siz tanladiz:</span>
-          <span class="r-answer-val ${ans.isCorrect ? 'c' : 'w'}">${ans.selectedLabel}. ${ans.selected}</span>
-        </div>
-        ${wrongRow}
+      <div class="rians">
+        <div class="rirow"><span class="rilbl">Sizning javob:</span><span class="riv ${a.ok ? 'g' : 'r'}">${a.sel}</span></div>
+        ${wr}
       </div>
-      <div class="r-explanation">${ans.explanation}</div>`;
-    report.appendChild(div);
+      <div class="riexp">${a.exp}</div>`;
+    rb.appendChild(d);
   });
-sendToTelegram(studentName, correct, answers.length);
-  showScreen('result-screen');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  sendToTelegram(student, c, answers.length, pct, timeStr);
+  show('result');
 }
 
+async function sendToTelegram(name, score, total, percent, time) {
+  const token = "BOT_TOKEN";
+  const chat_id = "CHAT_ID";
+
+  const message =
+    `📊 Yangi test natijasi\n\n` +
+    `👤 Talaba: ${name}\n` +
+    `✅ To'g'ri: ${score}\n` +
+    `❌ Xato: ${total - score}\n` +
+    `📝 Jami: ${total}\n` +
+    `📈 Foiz: ${percent}%\n` +
+    `⏱ Vaqt: ${time}`;
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chat_id,
+        text: message
+      })
+    });
+
+    const data = await res.json();
+    console.log("Telegram javobi:", data);
+  } catch (err) {
+    console.error("Xatolik:", err);
+  }
+}
 function retryQuiz() {
-  showScreen('intro-screen');
-  document.getElementById('inp-first').value = '';
-  document.getElementById('inp-last').value = '';
-}
-
-// ======================== SCREEN ========================
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-// Enter key support
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    const introActive = document.getElementById('intro-screen').classList.contains('active');
-    if (introActive) startQuiz();
-  }
-});
-function sendToTelegram(name, score, total) {
-
-  fetch("https://api.telegram.org/bot8750247683:AAGCAkeHuTRIBvCQpX2z7GRyoKfE-VrUrC4/sendMessage", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      chat_id: "7796824556",
-      text:
-        "📊 Yangi test natijasi\n\n" +
-        "👤 Talaba: " + name + "\n" +
-        "✅ To'g'ri: " + score + "\n" +
-        "📋 Jami: " + total
-    })
-  });
-
+  show('intro');
+  document.getElementById('fi').value = '';
+  document.getElementById('fl').value = '';
 }
 </script>
+
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
 <script>
-const tg = window.Telegram.WebApp;
-
-tg.ready();
-tg.expand();     // WebApp ni maksimal balandlikka kengaytiradi
+  const tg = window.Telegram.WebApp;
+  tg.ready();
+  tg.expand();
 </script>
 </body>
 </html>
-
-
